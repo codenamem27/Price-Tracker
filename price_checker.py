@@ -34,7 +34,7 @@ def check_amazon_item_price(playwright: Playwright, item_name: str, item_id: str
     page.get_by_role("textbox", name="or enter a postcode in Australia").click()
     page.get_by_role("textbox", name="or enter a postcode in Australia").fill("2000")
     page.locator("#GLUXPostalCodeWithCity_DropdownButton span").nth(1).click()
-    page.locator("#GLUXPostalCodeWithCity_DropdownList_3").click()
+    # page.locator("#GLUXPostalCodeWithCity_DropdownList_3").click()
     page.get_by_role("button", name="Submit").click()
 
     page.is_visible('#corePrice_feature_div')
