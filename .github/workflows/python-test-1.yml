@@ -1,5 +1,5 @@
 name: python-test-1
-run-name: ${{ github.actor }} is learning GitHub Actions
+run-name: ${{ github.actor }} is learning GitHub Actions - test
 on: workflow_dispatch
 jobs:
   check-bats-version:
