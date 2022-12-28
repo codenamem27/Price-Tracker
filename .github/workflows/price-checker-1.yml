@@ -20,4 +20,4 @@ jobs:
           pip install Faker beautifulsoup4 playwright
       
       - name: test python
-        run: python --version
+        run: python price_checker.py
