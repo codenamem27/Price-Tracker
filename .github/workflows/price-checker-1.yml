@@ -21,7 +21,7 @@ jobs:
 
       - name: run command
         run: |
-          playwright install chrome 
+          playwright install 
           python price_checker.py
         
         # run: playwright --version
