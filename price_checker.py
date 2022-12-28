@@ -31,7 +31,7 @@ def check_amazon_item_price(playwright: Playwright, item_name: str, item_id: str
     page.is_visible('#corePrice_feature_div')
 
     price_list_html = page.inner_html("#desktop_buybox")
-    # print(price_list_html)
+    print(price_list_html)
     soup = BeautifulSoup(price_list_html, 'html.parser')
     #document.querySelector('#desktop_buybox .a-box-group #corePrice_feature_div .a-price.a-text-price')
 
