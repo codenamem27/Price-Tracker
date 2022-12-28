@@ -2,7 +2,7 @@ name: price-checker-1
 run-name: price checker - amazon
 on: workflow_dispatch
 jobs:
-  build-1:
+  check-price:
     runs-on: ubuntu-latest
     steps:
 
