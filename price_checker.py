@@ -36,8 +36,8 @@ def check_amazon_item_price(playwright: Playwright, item_name: str, item_id: str
     #document.querySelector('#desktop_buybox .a-box-group #corePrice_feature_div .a-price.a-text-price')
 
     price_item = soup.select('#corePrice_feature_div .a-offscreen')
-    if len(price_item) == 0:
-        # books
+    print(f"print_item: {price_item}")
+    if len(price_item) == 0:    
         price_item = soup.select('#booksHeaderInfoContainer #booksHeaderSection #price')
 
     print(f"{item_name} - Target: {desired_price}")
