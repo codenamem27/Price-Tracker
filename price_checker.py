@@ -21,6 +21,7 @@ def check_amazon_item_price(playwright: Playwright, item_name: str, item_id: str
         "AppleWebKit/537.36 (KHTML, like Gecko) "
         "Chrome/69.0.3497.100 Safari/537.36"
     )
+
     context = browser.new_context(user_agent=ua)
     page = context.new_page()
 
@@ -28,6 +29,14 @@ def check_amazon_item_price(playwright: Playwright, item_name: str, item_id: str
     url = f"https://www.amazon.com.au/dp/{item_id}"
     page.goto(url, wait_until='domcontentloaded')
     # aaa = page.content()
+    
+    page.locator("#nav-global-location-popover-link").click()
+    page.get_by_role("textbox", name="or enter a postcode in Australia").click()
+    page.get_by_role("textbox", name="or enter a postcode in Australia").fill("2000")
+    page.locator("#GLUXPostalCodeWithCity_DropdownButton span").nth(1).click()
+    page.locator("#GLUXPostalCodeWithCity_DropdownList_3").click()
+    page.get_by_role("button", name="Submit").click()
+
     page.is_visible('#corePrice_feature_div')
 
     price_list_html = page.inner_html("#desktop_buybox")
