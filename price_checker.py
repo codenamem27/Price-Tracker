@@ -40,34 +40,19 @@ def check_amazon_item_price(playwright: Playwright, item_name: str, item_id: str
         page.get_by_role("textbox", name="or enter a postcode in Australia").type(text="2000", delay=10)
 
         page.locator("#GLUXPostalCodeWithCity_DropdownList").select_option('HAYMARKET')
-        # page.select_option(selector="#GLUXPostalCodeWithCity_DropdownList", index=0)
-
-        # page.locator("a:has-text(\"HAYMARKET\")").click()
 
         page.get_by_role("button", name="Submit").click()
         page.wait_for_load_state(state="domcontentloaded", timeout=2000)
-        page.wait_for_selector('#qualifiedBuybox', state='attached', timeout=30000)
+        page.wait_for_selector('#qualifiedBuybox', state='visible', timeout=30000)
 
     # page.is_visible('#corePrice_feature_div')
     page.wait_for_selector('#corePrice_feature_div', state='visible', timeout=30000)
 
-    # # url = f"https://www.amazon.com.au/dp/B00IMF1CDO"
-    # url = f"https://www.amazon.com.au/dp/{item_id}"
-    # page.goto(url, wait_until='domcontentloaded')
-    # # aaa = page.content()
-    
-    # page.locator("#nav-global-location-popover-link").click()
-    # page.get_by_role("textbox", name="or enter a postcode in Australia").click()
-    # page.get_by_role("textbox", name="or enter a postcode in Australia").fill("2000")
-    # page.locator("#GLUXPostalCodeWithCity_DropdownButton span").nth(1).click()
-    # # page.locator("#GLUXPostalCodeWithCity_DropdownList_3").click()
-    # page.get_by_role("button", name="Submit").click()
-
-    # page.is_visible('#corePrice_feature_div')
 
     price_list_html = page.inner_html("#desktop_buybox")
 
-    print(price_list_html)
+    # debug
+    # print(price_list_html)
 
     soup = BeautifulSoup(price_list_html, 'html.parser')
     #document.querySelector('#desktop_buybox .a-box-group #corePrice_feature_div .a-price.a-text-price')
