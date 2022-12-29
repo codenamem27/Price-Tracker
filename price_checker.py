@@ -46,10 +46,10 @@ def check_amazon_item_price(playwright: Playwright, item_name: str, item_id: str
 
         page.get_by_role("button", name="Submit").click()
         page.wait_for_load_state(state="domcontentloaded", timeout=2000)
-        page.wait_for_selector('#qualifiedBuybox', state='attached')
+        page.wait_for_selector('#qualifiedBuybox', state='attached', timeout=30000)
 
     # page.is_visible('#corePrice_feature_div')
-    page.wait_for_selector('#corePrice_feature_div', state='visible')
+    page.wait_for_selector('#corePrice_feature_div', state='visible', timeout=30000)
 
     # # url = f"https://www.amazon.com.au/dp/B00IMF1CDO"
     # url = f"https://www.amazon.com.au/dp/{item_id}"
