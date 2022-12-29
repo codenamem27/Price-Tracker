@@ -44,7 +44,7 @@ def check_amazon_item_price(playwright: Playwright, item_name: str, item_id: str
         page.wait_for_load_state(state="domcontentloaded", timeout=2000)
         
         start_time = datetime.datetime.now().replace(microsecond=0)
-        page.wait_for_selector('#qualifiedBuybox', state='visible', timeout=50000)
+        page.wait_for_selector('#qualifiedBuybox', state='visible', timeout=30000)
         end_time = datetime.datetime.now().replace(microsecond=0)
         print(f"waited '#qualifiedBuybox' for: {end_time-start_time}")
     
