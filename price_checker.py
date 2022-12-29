@@ -73,8 +73,7 @@ def check_amazon_item_price(playwright: Playwright, item_name: str, item_id: str
         print("good deal")
         send_email(subject=f"{item_name} - Current:{current_price}, Target:{desired_price}", body=f"{item_name}: {url}")
     else:
-        pass
-        # print("not good")
+        print("still expensive")
 
     context.close()
     browser.close()
