@@ -1,17 +1,16 @@
+import os
+import smtplib
 import datetime
 import time
-
 from playwright.sync_api import Playwright, sync_playwright
 from bs4 import BeautifulSoup
 from faker import Faker
-
-import smtplib
 
 
 fake = Faker()
 d1 = fake.random.randint(10, 28)
 d2 = fake.random.randint(10, 28)
-
+email_credential = ""
 
 def check_amazon_item_price(playwright: Playwright, item_name: str, item_id: str, 
                             desired_price: float, is_gh_action: False) -> None:
@@ -43,8 +42,12 @@ def check_amazon_item_price(playwright: Playwright, item_name: str, item_id: str
 
         page.get_by_role("button", name="Submit").click()
         page.wait_for_load_state(state="domcontentloaded", timeout=2000)
-        page.wait_for_selector('#qualifiedBuybox', state='visible', timeout=30000)
-
+        
+        start_time = datetime.datetime.now().replace(microsecond=0)
+        page.wait_for_selector('#qualifiedBuybox', state='visible', timeout=50000)
+        end_time = datetime.datetime.now().replace(microsecond=0)
+        print(f"waited '#qualifiedBuybox' for: {end_time-start_time}")
+    
     # page.is_visible('#corePrice_feature_div')
     page.wait_for_selector('#corePrice_feature_div', state='visible', timeout=30000)
 
@@ -68,7 +71,7 @@ def check_amazon_item_price(playwright: Playwright, item_name: str, item_id: str
 
     if float(current_price) <= desired_price:
         print("good deal")
-        # send_email(subject=f"{item_name} - C: {current_price}: T:{desired_price}", body=f"{item_name}: {url}")
+        send_email(subject=f"{item_name} - Current:{current_price}, Target:{desired_price}", body=f"{item_name}: {url}")
     else:
         pass
         # print("not good")
@@ -76,14 +79,41 @@ def check_amazon_item_price(playwright: Playwright, item_name: str, item_id: str
     context.close()
     browser.close()
 
-    # time.sleep(7200)
-    # time.sleep(20)
+
+def send_email(subject, body):
+
+    user = "rwudev1"
+    pwd = email_credential
+    recipient = "codenamem27@gmail.com"
+    FROM = "Price Checker<rwudev1@gmail.com>"
+    TO = recipient if isinstance(recipient, list) else [recipient]
+    # SUBJECT = subject
+    # TEXT = body
+
+    message = f"Subject: {subject} \n\n{body}"
+    try:
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.ehlo()
+        server.starttls()
+        server.login(user, pwd)
+        server.sendmail(FROM, TO, message)
+        server.close()
+        print('Email notification sent successfully.')
+    except Exception as ex: 
+        print(f"failed to send mail with exception:\n{ex}")
 
 
 def main():
-
-  with sync_playwright() as playwright:
-    check_amazon_item_price(playwright, "Wera Ratchet Small Set", "B004VMWZLU", 150, True)
+    
+    try:
+        global email_credential
+        email_credential = os.environ["email_mima"]
+        print("Retrieved credential.")
+    except KeyError:
+        email_credential = "email_mima not available!"
+    
+    with sync_playwright() as playwright:
+        check_amazon_item_price(playwright, "Wera Ratchet Small Set", "B004VMWZLU", 150, True)
 
 
 if __name__ == '__main__':
