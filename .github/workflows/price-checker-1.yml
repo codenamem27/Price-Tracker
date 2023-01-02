@@ -13,7 +13,7 @@ jobs:
 
       - name: Checkout repo content
         uses: actions/checkout@v3 # checkout the repository content to github runner
-        with:
+        # with:
 #          ref: R2.0
 
       - name: Install python
@@ -33,4 +33,3 @@ jobs:
         run: |
           python price_checker.py --item_list_file item_list_dev.txt
 
-          
