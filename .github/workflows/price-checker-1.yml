@@ -1,6 +1,11 @@
 name: price-checker-1
 run-name: price checker - amazon
-on: workflow_dispatch
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */3 * * *'
+
 jobs:
   check-price:
     runs-on: ubuntu-latest
@@ -9,7 +14,7 @@ jobs:
       - name: Checkout repo content
         uses: actions/checkout@v3 # checkout the repository content to github runner
         with:
-          ref: R1.0
+#          ref: R2.0
 
       - name: Install python
         uses: actions/setup-python@v4
@@ -26,5 +31,5 @@ jobs:
         env: 
           email_mima: ${{ secrets.EMAIL_MIMA }}
         run: |
-          python price_checker.py
-        
+#          python price_checker.py --item_list_file item_list_prod.txt
+          python price_checker.py --item_list_file item_list_dev.txt

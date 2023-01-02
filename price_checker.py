@@ -5,6 +5,7 @@ import time
 from playwright.sync_api import Playwright, sync_playwright
 from bs4 import BeautifulSoup
 from faker import Faker
+import argparse
 
 
 fake = Faker()
@@ -12,14 +13,13 @@ d1 = fake.random.randint(10, 28)
 d2 = fake.random.randint(10, 28)
 email_credential = ""
 
-amazon_items = [
-    "Wera Ratchet Small Set/B004VMWZLU/100",
-    "Wera Speed Ratcher Set/B00IMF1CDO/120"
-]
+# amazon_items = [
+#     "Wera Ratchet Small Set/B004VMWZLU/100",
+#     "Wera Speed Ratcher Set/B00IMF1CDO/120"
+# ]
 
 
 def check_amazon_item_price(playwright: Playwright, items: [str]) -> None:
-
     browser = playwright.chromium.launch(headless=True)
     ua = (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -91,18 +91,17 @@ def check_amazon_item_price(playwright: Playwright, items: [str]) -> None:
             print("still expensive :(")
 
         if idx + 1 != len(items):
-            print("Wait for a few seconds before proceeding to the next item")
+            print("Wait for a few seconds before proceeding to the next item.\n\n")
             time.sleep(5)
 
     context.close()
     browser.close()
 
 
-def send_email(subject, body):
-
+def send_email(subject, body, email="c o d e n a m e m 2 7 @ g m a i l . c o m"):
     user = "rwudev1"
     pwd = email_credential
-    recipient = "codenamem27@gmail.com"
+    recipient = email.replace(" ", "")
     FROM = "Price Checker<rwudev1@gmail.com>"
     TO = recipient if isinstance(recipient, list) else [recipient]
     # SUBJECT = subject
@@ -117,12 +116,24 @@ def send_email(subject, body):
         server.sendmail(FROM, TO, message)
         server.close()
         print('Email notification sent successfully.')
-    except Exception as ex: 
+    except Exception as ex:
         print(f"failed to send mail with exception:\n{ex}")
 
 
 def main():
-    
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--item_list_file', type=str)
+
+    args = parser.parse_args()
+
+    with open(args.item_list_file) as file:
+        amazon_items = [line.rstrip() for line in file]
+
+    print(amazon_items)
+
+    # return
+
     try:
         global email_credential
         email_credential = os.environ["email_mima"]
