@@ -13,8 +13,8 @@ jobs:
 
       - name: Checkout repo content
         uses: actions/checkout@v3 # checkout the repository content to github runner
-        # with:
-#          ref: R2.0
+        with:
+          ref: R2.2
 
       - name: Install python
         uses: actions/setup-python@v4
@@ -31,5 +31,5 @@ jobs:
         env: 
           email_mima: ${{ secrets.EMAIL_MIMA }}
         run: |
-          python price_checker.py --item_list_file item_list_dev.txt
+          python price_checker.py --item_list_file item_list_prod.txt
 
