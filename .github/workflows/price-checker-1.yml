@@ -31,5 +31,6 @@ jobs:
         env: 
           email_mima: ${{ secrets.EMAIL_MIMA }}
         run: |
-#          python price_checker.py --item_list_file item_list_prod.txt
           python price_checker.py --item_list_file item_list_dev.txt
+
+          
