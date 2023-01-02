@@ -65,7 +65,7 @@ def check_amazon_item_price(playwright: Playwright, items: [str]) -> None:
             end_time = datetime.datetime.now().replace(microsecond=0)
             print(f"waited '#qualifiedBuybox' for: {end_time - start_time}")
 
-        page.wait_for_selector('#corePrice_feature_div', state='visible', timeout=20000)
+        page.wait_for_selector('#corePrice_feature_div', state='attached', timeout=20000)
 
         price_list_html = page.inner_html("#desktop_buybox")
 
