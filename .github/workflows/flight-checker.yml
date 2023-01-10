@@ -1,10 +1,10 @@
-name: price-checker
-run-name: price checker - amazon
+name: flight-checker
+run-name: flight checker - IWTF
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */3 * * *'
+    - cron: '30 0,7,18 * * *'
 
 jobs:
   check-price:
@@ -31,5 +31,5 @@ jobs:
         env: 
           email_mima: ${{ secrets.EMAIL_MIMA }}
         run: |
-          python price_checker.py --item_list_file item_list_prod.txt
+          python flight_checker.py --flight_list_file flight_list_prod.txt
 
