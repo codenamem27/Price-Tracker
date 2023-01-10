@@ -54,9 +54,8 @@ def check_iwantthatflight(playwright: Playwright, items: [str]) -> None:
         # page.is_visible('#MessageContainer')
         page.wait_for_selector('#MessageContainer', state='visible')
 
-        page.locator("#Int_Filter_Contents").get_by_text("Scoot").click(delay=3000)
-
-        page.locator("#Int_Filter_Contents").get_by_text("AirAsia X").first.click(delay=3000)
+        # page.locator("#Int_Filter_Contents").get_by_text("Scoot").click(delay=3000)
+        # page.locator("#Int_Filter_Contents").get_by_text("AirAsia X").first.click(delay=3000)
 
         # page.locator("#Int_Filter_Contents").get_by_text("SAS").click(delay=2000)
         # locator(".slider-duration > .slider > .slider-track > .slider-selection")
