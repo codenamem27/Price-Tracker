@@ -4,7 +4,7 @@ run-name: flight checker - IWTF
 on:
   workflow_dispatch:
   schedule:
-    - cron: '30 0,7,18 * * *'
+    - cron: '30 7 * * *'
 
 jobs:
   check-price:
