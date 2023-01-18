@@ -1,6 +1,11 @@
 name: python-test-1
 run-name: ${{ github.actor }} is learning GitHub Actions - test
-on: workflow_dispatch
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/15 7-23 * * *'
+    - cron: '*/15 0-2 * * *'
 jobs:
   check-bats-version:
     runs-on: ubuntu-latest
