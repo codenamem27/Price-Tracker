@@ -1,4 +1,4 @@
-name: flight-checker
+name: flight-checker-cdg
 run-name: flight checker - IWTF
 
 on:
