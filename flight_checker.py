@@ -2,7 +2,7 @@ import os
 import smtplib
 import datetime
 import time
-from playwright.sync_api import Playwright, sync_playwright
+from playwright.sync_api import Playwright, sync_playwright, Page
 from bs4 import BeautifulSoup
 from faker import Faker
 import argparse
@@ -19,18 +19,30 @@ CONST_Paris_GOOD_Price = 1800
 results = []
 
 
+def check_locator_and_click(pg: Page, item_name: str):
+    element = pg.locator("#Int_Filter_Contents").get_by_text(item_name).first
+    if element.is_visible():
+        print(f"Found '{item_name}' and clicked")
+        element.click(delay=2000)
+        pg.wait_for_timeout(3000)
+    else:
+        print(f"'{item_name}' is Missing, skipped")
+
+
 def check_iwantthatflight(playwright: Playwright, items: [str]) -> None:
 
-    browser = playwright.chromium.launch(headless=True)
+    browser = playwright.chromium.launch(headless=False)
     ua = (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
         "AppleWebKit/537.36 (KHTML, like Gecko) "
         "Chrome/69.0.3497.100 Safari/537.36"
     )
-    context = browser.new_context(user_agent=ua)
-    page = context.new_page()
 
     for idx, itm_str in enumerate(items):
+
+        context = browser.new_context(user_agent=ua)
+        page = context.new_page()
+
         itm_str = str(itm_str)
         print(itm_str)
         flight_city_from_to = str(itm_str).split(",")
@@ -38,7 +50,6 @@ def check_iwantthatflight(playwright: Playwright, items: [str]) -> None:
         flight_city = flight_city_from_to[0].strip()
         flight_from = flight_city_from_to[1].strip()
         flight_to = flight_city_from_to[2].strip()
-        # url = f"https://fly.iwantthatflight.com.au/flight.ashx?&oc=SYD&dc=CPH&dd=29/Jun/2023&rd=15/Jul/2023&cur=AUD"
         url = f"https://fly.iwantthatflight.com.au/flight.ashx?&oc=SYD&dc={flight_city}&dd={flight_from}&rd={flight_to}&cur=AUD"
         # url = f"https://fly.iwantthatflight.com.au/flight.ashx?&oc=SYD&dc=CPH&dd={d1}/Jun/2023&rd={d2}/Jul/2023&cur=AUD"
         print(url)
@@ -54,16 +65,22 @@ def check_iwantthatflight(playwright: Playwright, items: [str]) -> None:
         # page.is_visible('#MessageContainer')
         page.wait_for_selector('#MessageContainer', state='visible')
 
-        # page.locator("#Int_Filter_Contents").get_by_text("Scoot").click(delay=3000)
-        # page.locator("#Int_Filter_Contents").get_by_text("AirAsia X").first.click(delay=3000)
+        check_locator_and_click(page, "3 Stops")
+        check_locator_and_click(page, "AirAsia X")
+        check_locator_and_click(page, "Scoot")
+        check_locator_and_click(page, "Cebu Pacific")
+        check_locator_and_click(page, "AirAsia")
+        check_locator_and_click(page, "Ryanair")
+        check_locator_and_click(page, "Vietnam Airlines")
 
+
+        # page.wait_for_timeout(2000)
         # page.locator("#Int_Filter_Contents").get_by_text("SAS").click(delay=2000)
         # locator(".slider-duration > .slider > .slider-track > .slider-selection")
         # page.locator(".slider-duration > .slider > .slider-track > .slider-selection").hover()
         # page.locator('.slider-duration > .slider > .max-slider-handle').hover()
 
-
-        # page.get_by_text("Scoot").click(delay=3000)
+        # page.pause()
 
         price_list_html = page.inner_html("#LeaveCalender")
         # print(price_list_html)
@@ -94,8 +111,8 @@ def check_iwantthatflight(playwright: Playwright, items: [str]) -> None:
                 break
 
         time.sleep(10)
+        context.close()
 
-    context.close()
     browser.close()
 
 
@@ -121,32 +138,7 @@ def send_email(subject, body, email="c o d e n a m e m 2 7 @ g m a i l . c o m")
         print(f"failed to send mail with exception:\n{ex}")
 
 
-def test():
-    global email_credential
-    email_credential = os.environ["email_mima"]
-
-    ss = "CPH, 30/Jun/2023, 30/Jul/2023"
-    print(ss.replace("/2023",""))
-
-    results.append("CPH, 30/Jun, 30/Jul")
-    results.append("- $2127")
-    results.append("- $2159\n")
-    results.append("CPH, 15/Jun, 15/Jul")
-    results.append("- $2127")
-    results.append("- $2226\n")
-
-    email_body = "\n".join(results)
-
-    aaa = "abc"
-    aaa += " ***"
-    print(aaa)
-
-    # send_email("test", email_body)
-    exit()
-
 def main():
-
-    # test()
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--flight_list_file', type=str)
@@ -175,6 +167,7 @@ def main():
     email_body += "\n".join(results)
 
     send_email("Flight Checker", email_body)
+    
 
 if __name__ == '__main__':
     main()
