@@ -110,7 +110,7 @@ def check_iwantthatflight(playwright: Playwright, items: [str]) -> None:
                 results.append("\n")
                 break
 
-        time.sleep(10)
+        time.sleep(1)
         context.close()
 
     browser.close()
