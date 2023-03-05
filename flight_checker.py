@@ -31,7 +31,7 @@ def check_locator_and_click(pg: Page, item_name: str):
 
 def check_iwantthatflight(playwright: Playwright, items: [str]) -> None:
 
-    browser = playwright.chromium.launch(headless=False)
+    browser = playwright.chromium.launch(headless=True)
     ua = (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
         "AppleWebKit/537.36 (KHTML, like Gecko) "
