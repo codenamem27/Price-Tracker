@@ -21,7 +21,7 @@ results = []
 
 def check_locator_and_click(pg: Page, item_name: str):
     element = pg.locator("#Int_Filter_Contents").get_by_text(item_name).first
-    if element.is_visible():
+    if element:
         print(f"Found '{item_name}' and clicked")
         element.click(delay=2000)
         pg.wait_for_timeout(3000)
