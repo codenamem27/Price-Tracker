@@ -65,7 +65,7 @@ def check_iwantthatflight(playwright: Playwright, items: [str]) -> None:
         # page.is_visible('#MessageContainer')
         page.wait_for_selector('#MessageContainer', state='visible')
 
-        check_locator_and_click(page, "3 Stops")
+        # check_locator_and_click(page, "3 Stops")
         check_locator_and_click(page, "AirAsia X")
         check_locator_and_click(page, "Scoot")
         check_locator_and_click(page, "Cebu Pacific")
