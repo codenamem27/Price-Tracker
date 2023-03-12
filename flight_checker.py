@@ -6,21 +6,26 @@ from playwright.sync_api import Playwright, sync_playwright, Page
 from bs4 import BeautifulSoup
 from faker import Faker
 import argparse
+import logging
 
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
 
 fake = Faker()
 d1 = fake.random.randint(10, 28)
 d2 = fake.random.randint(10, 28)
 email_credential = ""
 
-CONST_CPH_GOOD_Price = 2100
-CONST_Paris_GOOD_Price = 1800
-
 results = []
+
+logging.basicConfig(level=logging.INFO,
+                    format="%(asctime)s [%(levelname)s] %(message)s",
+                    handlers=[logging.FileHandler("flight_checker.log"), logging.StreamHandler()])
 
 
 def check_locator_and_click(pg: Page, item_name: str):
-    try:        
+    try:
         element = pg.locator("#Int_Filter_Contents").get_by_text(item_name).first
         if element:
             print(f"Found '{item_name}' and clicked")
@@ -30,7 +35,18 @@ def check_locator_and_click(pg: Page, item_name: str):
             print(f"'{item_name}' is Missing, skipped")
     except:
         print(f"** Failed to locate element: {item_name}")
-        
+
+
+def attach_img(msg: MIMEMultipart, image_file: str):
+    fp = open(image_file, "rb")
+    msg_image = MIMEImage(fp.read())
+    fp.close()
+
+    msg_image.add_header("Content-ID", f"<{image_file}>")
+    msg.attach(msg_image)
+
+    return msg
+
 
 def check_iwantthatflight(playwright: Playwright, items: [str]) -> None:
 
@@ -40,6 +56,10 @@ def check_iwantthatflight(playwright: Playwright, items: [str]) -> None:
         "AppleWebKit/537.36 (KHTML, like Gecko) "
         "Chrome/69.0.3497.100 Safari/537.36"
     )
+
+    email_msg = MIMEMultipart('related')
+
+    flight_city = ""
 
     for idx, itm_str in enumerate(items):
 
@@ -53,6 +73,8 @@ def check_iwantthatflight(playwright: Playwright, items: [str]) -> None:
         flight_city = flight_city_from_to[0].strip()
         flight_from = flight_city_from_to[1].strip()
         flight_to = flight_city_from_to[2].strip()
+        flight_threshold = int(flight_city_from_to[3].strip())
+
         url = f"https://fly.iwantthatflight.com.au/flight.ashx?&oc=SYD&dc={flight_city}&dd={flight_from}&rd={flight_to}&cur=AUD"
         # url = f"https://fly.iwantthatflight.com.au/flight.ashx?&oc=SYD&dc=CPH&dd={d1}/Jun/2023&rd={d2}/Jul/2023&cur=AUD"
         print(url)
@@ -73,15 +95,8 @@ def check_iwantthatflight(playwright: Playwright, items: [str]) -> None:
         check_locator_and_click(page, "Scoot")
         check_locator_and_click(page, "Cebu Pacific")
         check_locator_and_click(page, "AirAsia")
-        check_locator_and_click(page, "Ryanair")
+        # check_locator_and_click(page, "Ryanair")
         check_locator_and_click(page, "Vietnam Airlines")
-
-
-        # page.wait_for_timeout(2000)
-        # page.locator("#Int_Filter_Contents").get_by_text("SAS").click(delay=2000)
-        # locator(".slider-duration > .slider > .slider-track > .slider-selection")
-        # page.locator(".slider-duration > .slider > .slider-track > .slider-selection").hover()
-        # page.locator('.slider-duration > .slider > .max-slider-handle').hover()
 
         # page.pause()
 
@@ -90,55 +105,79 @@ def check_iwantthatflight(playwright: Playwright, items: [str]) -> None:
         soup = BeautifulSoup(price_list_html, 'html.parser')
         price_items = soup.select('.plan-price.PriceResult.Int_PriceResult')
 
-        results.append(f"{itm_str.replace('/2023','').replace('/','-')}")
-        results.append(url)
+        results.append(f"<p style='font-size:15px; font-weight: bold;'>{itm_str.replace('/2023', '').replace('/', '-')}</p>")
 
         for idx, price_item in enumerate(price_items):
 
             price_value = int(str(price_item.contents[0]).replace("$", ""))
 
             print(f"{price_value}")
+            if price_value < flight_threshold:
+                print(f"threshold: {flight_threshold}")
+                results.append(f"{price_value} *****<br>")
 
-            if itm_str.startswith("CPH"):
-                if price_value < CONST_CPH_GOOD_Price:
-                    price_value = str(price_value) + " ***"
+                ss_file_name = f"{flight_city}-{flight_from.replace('/', '')}-{flight_to.replace('/', '')}-{fake.random.randint(1000, 2000)}.jpg"
+                page.locator(".plan.return-plan").nth(idx).screenshot(path=ss_file_name)
 
-            if itm_str.startswith("CDG"):
-                if price_value < CONST_Paris_GOOD_Price:
-                    price_value = str(price_value) + " ***"
+                results.append(f"<img src='cid:{ss_file_name}' alt='Price' ><br>")
+                email_msg = attach_img(email_msg, ss_file_name)
 
-            results.append(f"- {price_value}")
+            else:
+                results.append(f"{price_value} <br>")
 
             if idx == 1:
-                results.append("\n")
+                # results.append("\n")
                 break
 
-        time.sleep(1)
+        results.append(f"<p>{url}</p>")
+
         context.close()
+        time.sleep(2)
 
     browser.close()
 
+    send_html_email(email_msg, "\n".join(results), f"Flight Checker: {flight_city}")
 
-def send_email(subject, body, email="c o d e n a m e m 2 7 @ g m a i l . c o m"):
+
+def send_html_email(msg: MIMEMultipart, result_html: str, subject: str):
+
+    print(result_html)
+
     user = "rwudev1"
     pwd = email_credential
-    recipient = email.replace(" ", "")
-    FROM = "Price Checker"
-    TO = recipient if isinstance(recipient, list) else [recipient]
-    # SUBJECT = subject
-    # TEXT = body
 
-    message = f"Subject: {subject} \n\n{body}"
+    recipient = "c o d e n a m e m 2 7 ! g m a i l . c o m"
+    recipient = recipient.replace(" ", "").replace("!", "@")
+
+    FROM = user
+    TO = recipient if isinstance(recipient, list) else [recipient]
+
+    msg['Subject'] = subject
+
+    html = f"""\
+    <html>
+      <head></head>
+        <body>
+            {result_html}
+        </body>
+    </html>
+    """
+
+    # Record the MIME types of text/html.
+    part2 = MIMEText(html, 'html')
+    # Attach parts into message container.
+    msg.attach(part2)
+
     try:
         server = smtplib.SMTP("smtp.gmail.com", 587)
         server.ehlo()
         server.starttls()
         server.login(user, pwd)
-        server.sendmail(FROM, TO, message)
+        server.sendmail(FROM, TO, msg.as_string())
         server.close()
-        print('Email notification sent successfully.')
+        logging.info('successfully sent the mail')
     except Exception as ex:
-        print(f"failed to send mail with exception:\n{ex}")
+        logging.info(f"Failed to send mail:\n{ex}")
 
 
 def main():
@@ -163,14 +202,6 @@ def main():
     with sync_playwright() as playwright:
         check_iwantthatflight(playwright, flight_items)
 
-    for itm in results:
-        print(itm)
-
-    email_body = f"CPH: {CONST_CPH_GOOD_Price}\nCDW: {CONST_Paris_GOOD_Price}\n\n"
-    email_body += "\n".join(results)
-
-    send_email("Flight Checker", email_body)
-    
 
 if __name__ == '__main__':
     main()

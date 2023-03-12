@@ -3,3 +3,6 @@ node_modules
 .idea
 venv
 .DS_Store
+*.jpg
+*.log
+
