@@ -25,6 +25,9 @@ logging.basicConfig(level=logging.INFO,
 
 
 def check_locator_and_click(pg: Page, item_name: str):
+
+    error_score: int = 0
+
     try:
         element = pg.locator("#Int_Filter_Contents").get_by_text(item_name).first
         if element:
@@ -33,9 +36,12 @@ def check_locator_and_click(pg: Page, item_name: str):
             pg.wait_for_timeout(3000)
         else:
             print(f"'{item_name}' is Missing, skipped")
+            error_score = 1
     except:
         print(f"** Failed to locate element: {item_name}")
+        error_score = 10
 
+    return error_score
 
 def attach_img(msg: MIMEMultipart, image_file: str):
     fp = open(image_file, "rb")
@@ -62,6 +68,9 @@ def check_iwantthatflight(playwright: Playwright, items: [str]) -> None:
     flight_city = ""
 
     for idx, itm_str in enumerate(items):
+
+        error_score = 0
+        error_score_display = ""
 
         context = browser.new_context(user_agent=ua)
         page = context.new_page()
@@ -90,13 +99,13 @@ def check_iwantthatflight(playwright: Playwright, items: [str]) -> None:
         # page.is_visible('#MessageContainer')
         page.wait_for_selector('#MessageContainer', state='visible')
 
-        check_locator_and_click(page, "3 Stops")
-        check_locator_and_click(page, "AirAsia X")
-        check_locator_and_click(page, "Scoot")
-        check_locator_and_click(page, "Cebu Pacific")
-        check_locator_and_click(page, "AirAsia")
+        error_score += check_locator_and_click(page, "3 Stops")
+        error_score += check_locator_and_click(page, "AirAsia X")
+        error_score += check_locator_and_click(page, "Scoot")
+        error_score += check_locator_and_click(page, "Cebu Pacific")
+        error_score += check_locator_and_click(page, "AirAsia")
         # check_locator_and_click(page, "Ryanair")
-        check_locator_and_click(page, "Vietnam Airlines")
+        error_score += check_locator_and_click(page, "Vietnam Airlines")
 
         # page.pause()
 
@@ -105,7 +114,10 @@ def check_iwantthatflight(playwright: Playwright, items: [str]) -> None:
         soup = BeautifulSoup(price_list_html, 'html.parser')
         price_items = soup.select('.plan-price.PriceResult.Int_PriceResult')
 
-        results.append(f"<p style='font-size:15px; font-weight: bold;'>{itm_str.replace('/2023', '').replace('/', '-')}</p>")
+        if error_score > 0:
+            error_score_display = f"({str(error_score)})"
+
+        results.append(f"<p style='font-size:15px; font-weight: bold;'>{itm_str.replace('/2023', '').replace('/', '-')} {error_score_display}</p>")
 
         for idx, price_item in enumerate(price_items):
 
