@@ -65,7 +65,7 @@ def check_momondo(playwright: Playwright, all_flight_items: [str]) -> None:
     email_msg = MIMEMultipart('related')
     flight_city = "undefined"
 
-    browser = playwright.chromium.launch(headless=False)
+    browser = playwright.chromium.launch(headless=True)
     ua = (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
         "AppleWebKit/537.36 (KHTML, like Gecko) "
