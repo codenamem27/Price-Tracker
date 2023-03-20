@@ -141,7 +141,7 @@ def check_iwantthatflight(playwright: Playwright, items: [str]) -> None:
                 # results.append("\n")
                 break
 
-        results.append(f"<p>{url}</p>")
+        results.append(f"{url}<br><br>")
 
         context.close()
         time.sleep(2)
