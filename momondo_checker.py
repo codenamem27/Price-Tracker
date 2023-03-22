@@ -20,7 +20,7 @@ fake = Faker()
 d1 = fake.random.randint(10, 28)
 d2 = fake.random.randint(10, 28)
 email_credential = ""
-
+is_headless = True
 results = []
 
 logging.basicConfig(level=logging.INFO,
@@ -65,7 +65,7 @@ def check_momondo(playwright: Playwright, all_flight_items: [str]) -> None:
     email_msg = MIMEMultipart('related')
     flight_city = "undefined"
 
-    browser = playwright.chromium.launch(headless=True)
+    browser = playwright.chromium.launch(headless=is_headless)
     ua = (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
         "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -99,6 +99,7 @@ def check_momondo(playwright: Playwright, all_flight_items: [str]) -> None:
 
         # price_list_html = page.inner_html(".Ui-Flights-Results-Components-ListView-container")
         items = page.query_selector_all(".Ui-Flights-Results-Components-ListView-container div[data-resultid]")
+
         for idx, flight_itm in enumerate(items):
             if idx ==0:
                 # skip the advertisement fare
@@ -109,6 +110,13 @@ def check_momondo(playwright: Playwright, all_flight_items: [str]) -> None:
 
             if price_value < flight_threshold:
                 results.append(f"{price_value} *****<br>")
+
+                ss_file_name = f"{flight_city}_{flight_from}_{flight_to}-{fake.random.randint(100, 999)}.jpg"
+                # flight_itm.query_selector("div[class*='-content-section']").screenshot(path=ss_file_name)
+                flight_itm.query_selector("div[class*='-content-section'] div[class*='-main']").screenshot(path=ss_file_name)
+
+                results.append(f"<img src='cid:{ss_file_name}' alt='Price' ><br>")
+                email_msg = attach_img(email_msg, ss_file_name)
             else:
                 results.append(f"{price_value} <br>")
 
@@ -192,6 +200,10 @@ def main():
         global email_credential
         email_credential = os.environ["email_mima"]
         print("Retrieved credential.")
+
+        global is_headless
+        is_headless = os.environ.get("is_headless") is None
+
     except KeyError:
         print("email_mima not available!")
 
