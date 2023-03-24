@@ -3,7 +3,7 @@ import smtplib
 import datetime
 import time
 from playwright.sync_api import Playwright, sync_playwright, Page
-from bs4 import BeautifulSoup
+
 from faker import Faker
 import argparse
 import logging
@@ -13,6 +13,7 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from datetime import datetime
 
+from bs4 import BeautifulSoup
 from bs4 import Tag
 
 
@@ -21,10 +22,10 @@ d1 = fake.random.randint(10, 28)
 d2 = fake.random.randint(10, 28)
 email_credential = ""
 is_headless = True
-results = []
+# results = []
 
-logging.basicConfig(level=logging.INFO,
-                    format="%(asctime)s [%(levelname)s] %(message)s",
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s",
                     handlers=[logging.FileHandler("momondo_checker.log"), logging.StreamHandler()])
 
 
@@ -61,7 +62,7 @@ def attach_img(msg: MIMEMultipart, image_file: str):
 
 def check_momondo(playwright: Playwright, all_flight_items: [str]) -> None:
 
-    result = []
+    results = []
     email_msg = MIMEMultipart('related')
     flight_city = "undefined"
 
@@ -84,45 +85,52 @@ def check_momondo(playwright: Playwright, all_flight_items: [str]) -> None:
         flight_to = datetime.strptime(flight_item_data[2].strip(), "%d/%b/%Y").strftime("%Y-%m-%d")
         flight_threshold = int(flight_item_data[3].strip())
 
-        d1 = fake.random.randint(10, 28)
-        d2 = fake.random.randint(10, 28)
 
         url = f"https://www.momondo.com.au/flight-search/SYD-{flight_city}/{flight_from}/{flight_to}?sort=price_a"
-        # url = f"https://www.momondo.com.au/flight-search/SYD-CPH/2023-06-{d1}/2023-07-{d2}?sort=price_a"
+        if not is_headless: # local debug mode
+            d1 = fake.random.randint(10, 28)
+            d2 = fake.random.randint(10, 28)
+            url = f"https://www.momondo.com.au/flight-search/SYD-CPH/2023-06-{d1}/2023-07-{d2}?sort=price_a"
+
         print(url)
 
-        page.goto(url, wait_until='domcontentloaded', timeout=3000)
-        # page.wait_for_timeout(5000)
-
-        page.wait_for_function("document.querySelector('.skp2.skp2-inlined').getAttribute('aria-hidden')=='true'", timeout=90000)
         results.append(f"<p style='font-size:15px; font-weight: bold;'>{flight_item_str.replace('/2023', '').replace('/', '-')}</p>")
+        try:
+            page.goto(url, wait_until='domcontentloaded', timeout=3000)
+            # page.wait_for_timeout(5000)
+            page.wait_for_function("document.querySelector('.skp2.skp2-inlined').getAttribute('aria-hidden')=='true'", timeout=90000)
 
-        # price_list_html = page.inner_html(".Ui-Flights-Results-Components-ListView-container")
-        items = page.query_selector_all(".Ui-Flights-Results-Components-ListView-container div[data-resultid]")
+            price_list_html = page.query_selector_all(".Ui-Flights-Results-Components-ListView-container div[data-resultid]")
+            for idx, flight_itm in enumerate(price_list_html):
+                data_result_val = flight_itm.get_attribute("data-resultid").strip()
+                print(data_result_val)
+                if data_result_val.endswith("-sponsored"):
+                    # skip the advertisement fare
+                    continue
 
-        for idx, flight_itm in enumerate(items):
-            if idx ==0:
-                # skip the advertisement fare
-                continue
+                item_price = flight_itm.query_selector("div[class*='-price-text-container'] div")
 
-            item_price = flight_itm.query_selector("div[class*='-price-text-container'] div")
-            price_value = int(item_price.inner_html().replace("$", "").replace(",", ""))
+                price_value = int(item_price.inner_html().replace("$", "").replace(",", ""))
 
-            if price_value < flight_threshold:
-                results.append(f"{price_value} *****<br>")
+                if price_value < flight_threshold:
+                    results.append(f"{price_value} *****<br>")
 
-                ss_file_name = f"{flight_city}_{flight_from}_{flight_to}-{fake.random.randint(100, 999)}.jpg"
-                # flight_itm.query_selector("div[class*='-content-section']").screenshot(path=ss_file_name)
-                flight_itm.query_selector("div[class*='-content-section'] div[class*='-main']").screenshot(path=ss_file_name)
+                    ss_file_name = f"{flight_city}_{flight_from}_{flight_to}-{fake.random.randint(100, 999)}.jpg"
+                    # flight_itm.query_selector("div[class*='-content-section']").screenshot(path=ss_file_name)
+                    flight_itm.query_selector("div[class*='-content-section'] div[class*='-main']").screenshot(path=ss_file_name)
 
-                results.append(f"<img src='cid:{ss_file_name}' alt='Price' ><br>")
-                email_msg = attach_img(email_msg, ss_file_name)
-            else:
-                results.append(f"{price_value} <br>")
+                    results.append(f"<img src='cid:{ss_file_name}' alt='Price' ><br>")
+                    email_msg = attach_img(email_msg, ss_file_name)
+                else:
+                    results.append(f"{price_value} <br>")
 
-            print(item_price.inner_html().replace("$", "").replace(",", ""))
-            if idx == 2:
-                break
+                print(item_price.inner_html().replace("$", "").replace(",", ""))
+                if idx == 2:
+                    break
+
+        except Exception as ex:
+            results.append(f"- Failed to get data. <br>")
+
         results.append(f"{url}<br><br>")
 
         context.close()
