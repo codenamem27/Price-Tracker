@@ -60,6 +60,23 @@ def attach_img(msg: MIMEMultipart, image_file: str):
     return msg
 
 
+def get_city_name(airport_code: str):
+
+    airport_code = airport_code.lower()
+    city_name = ""
+
+    if airport_code == "cph":
+        city_name = "Copenhagen"
+    elif airport_code == "cdw":
+        city_name = "Paris"
+    elif airport_code == "hel":
+        city_name = "Helsinki"
+    elif airport_code == "zrh":
+        city_name = "Zurich"
+
+    return city_name
+
+
 def check_momondo(playwright: Playwright, all_flight_items: [str]) -> None:
 
     results = []
@@ -148,7 +165,7 @@ def check_momondo(playwright: Playwright, all_flight_items: [str]) -> None:
 
     browser.close()
 
-    send_html_email(email_msg, "\n".join(results), f"Flight Checker: {flight_city} - Momondo")
+    send_html_email(email_msg, "\n".join(results), f"Flight Checker: {get_city_name(flight_city)} - Momondo")
 
 
 def send_html_email(msg: MIMEMultipart, result_html: str, subject: str):
