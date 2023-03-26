@@ -138,7 +138,8 @@ def check_momondo(playwright: Playwright, all_flight_items: [str]) -> None:
 
                     ss_file_name = f"{flight_city}_{flight_from}_{flight_to}-{fake.random.randint(100, 999)}.jpg"
                     # flight_itm.query_selector("div[class*='-content-section']").screenshot(path=ss_file_name)
-                    flight_itm.query_selector("div[class*='-content-section'] div[class*='-main']").screenshot(path=ss_file_name)
+                    # flight_itm.query_selector("div[class*='-content-section'] div[class*='-main']").screenshot(path=ss_file_name)
+                    flight_itm.screenshot(path=ss_file_name)
 
                     results.append(f"<img src='cid:{ss_file_name}' alt='Price' ><br>")
                     email_msg = attach_img(email_msg, ss_file_name)
