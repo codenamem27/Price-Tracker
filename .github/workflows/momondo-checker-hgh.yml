@@ -1,5 +1,5 @@
-name: momondo - ZRH
-run-name: momondo checker - ZRH
+name: momondo - Hangzhou
+run-name: momondo checker - HGH
 
 on:
   workflow_dispatch:
