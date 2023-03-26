@@ -1,5 +1,5 @@
-name: momondo - Hangzhou
-run-name: momondo checker - HGH
+name: momondo - Shanghai
+run-name: momondo checker - PVG
 
 on:
   workflow_dispatch:
@@ -31,5 +31,5 @@ jobs:
         env: 
           email_mima: ${{ secrets.EMAIL_MIMA }}
         run: |
-          python momondo_checker.py --flight_list_file flight_list_hgh_prod.txt
+          python momondo_checker.py --flight_list_file flight_list_pvg_prod.txt
 
