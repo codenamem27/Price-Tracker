@@ -170,7 +170,7 @@ def check_momondo(playwright: Playwright, all_flight_items: [str]) -> None:
 
     browser.close()
 
-    send_html_email(email_msg, "\n".join(results), f"Flight Checker: {get_city_name(flight_city)} - Momondo")
+    send_html_email(email_msg, "\n".join(results), f"Flight Checker: Momondo - {get_city_name(flight_city)}")
 
 
 def send_html_email(msg: MIMEMultipart, result_html: str, subject: str):
