@@ -120,8 +120,8 @@ def check_momondo(playwright: Playwright, all_flight_items: [str]) -> None:
         results.append(f"<p style='font-size:15px; font-weight: bold;'>{flight_item_str.replace('/2023', '').replace('/', '-')}</p>")
         try:
             page.goto(url, wait_until='domcontentloaded', timeout=3000)
-            # page.wait_for_timeout(5000)
-            page.wait_for_function("document.querySelector('.skp2.skp2-inlined').getAttribute('aria-hidden')=='true'", timeout=90000)
+            page.wait_for_timeout(45000)
+            # page.wait_for_function("document.querySelector('.skp2.skp2-inlined').getAttribute('aria-hidden')=='true'", timeout=90000)
 
             price_list_html = page.query_selector_all(".Ui-Flights-Results-Components-ListView-container div[data-resultid]")
             for idx, flight_itm in enumerate(price_list_html):
