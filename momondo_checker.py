@@ -79,6 +79,9 @@ def get_city_name(airport_code: str):
         city_name = "Shanghai"
     elif airport_code == "kef":
         city_name = "Reykjavik"
+    elif airport_code == "tpe":
+        city_name = "Taipei"
+
 
     return city_name
 

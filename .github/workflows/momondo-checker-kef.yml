@@ -3,8 +3,8 @@ run-name: momondo checker - KEF
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '15 7 * * *'
+#  schedule:
+#    - cron: '15 7 * * *'
 
 jobs:
   check-price:

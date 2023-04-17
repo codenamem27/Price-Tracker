@@ -1,10 +1,10 @@
-name: momondo - Helsinki
-run-name: momondo checker - HEL
+name: momondo - Taipei
+run-name: momondo checker - TPE
 
 on:
   workflow_dispatch:
-#  schedule:
-#    - cron: '00 9 * * *'
+  schedule:
+    - cron: '30 8 * * *'
 
 jobs:
   check-price:
@@ -31,5 +31,5 @@ jobs:
         env: 
           email_mima: ${{ secrets.EMAIL_MIMA }}
         run: |
-          python momondo_checker.py --flight_list_file flight_list_hel_prod.txt
+          python momondo_checker.py --flight_list_file flight_list_tpe_prod.txt
 
