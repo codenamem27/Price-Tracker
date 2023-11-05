@@ -112,12 +112,11 @@ def check_momondo(playwright: Playwright, all_flight_items: [str]) -> None:
         flight_threshold = int(flight_item_data[3].strip())
 
         url_stop_option = ""
-        if len(flight_item_data) == 4:
+        if len(flight_item_data) == 5:
             stop_num = flight_item_data[4].strip()
-            url_stop_option = f"fs=stops=~{stop_num}"
+            url_stop_option = f"&fs=stops=~{stop_num}"
 
-
-        url = f"https://www.momondo.com.au/flight-search/SYD-{flight_city}/{flight_from}/{flight_to}?sort=price_a&" \
+        url = f"https://www.momondo.com.au/flight-search/SYD-{flight_city}/{flight_from}/{flight_to}?sort=price_a" \
               f"{url_stop_option}"
         if not is_headless: # local debug mode
             d1 = fake.random.randint(10, 28)
