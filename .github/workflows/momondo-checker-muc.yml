@@ -1,0 +1,35 @@
+name: momondo - Hangzhou
+run-name: momondo checker - HGH
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '10 8 * * *'
+
+jobs:
+  check-price:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout repo content
+        uses: actions/checkout@v3 # checkout the repository content to github runner
+#        with:
+#          ref: R2.2
+
+      - name: Install python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9' # install the python version needed
+          
+      - name: Install python packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install Faker beautifulsoup4 playwright
+          playwright install chromium
+
+      - name: Execute python script
+        env: 
+          email_mima: ${{ secrets.EMAIL_MIMA }}
+        run: |
+          python momondo_checker.py --flight_list_file flight_list_muc_prod.txt
+
