@@ -1,11 +1,11 @@
-name: momondo - Munich - 1
-run-name: momondo checker - MUC - 1
+name: momondo - Munich - 2
+run-name: momondo checker - MUC - 2
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '20 8 * * *'
-    - cron: '20 19 * * *'
+    - cron: '10 8 * * *'
+    - cron: '10 19 * * *'
 
 jobs:
   check-price:
@@ -29,7 +29,7 @@ jobs:
           playwright install chromium
 
       - name: Execute python script
-        env: 
+        env:
           email_mima: ${{ secrets.EMAIL_MIMA }}
         run: |
-          python momondo_checker.py --flight_list_file flight_list_muc_prod_1.txt
+          python momondo_checker.py --flight_list_file flight_list_muc_prod_2.txt
