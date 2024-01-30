@@ -35,3 +35,8 @@ jobs:
         run: |
           python momondo_checker.py --flight_list_file flight_list_muc_prod_1.txt
 
+      - name: Execute python script
+        env:
+          email_mima: ${{ secrets.EMAIL_MIMA }}
+        run: |
+          python momondo_checker.py --flight_list_file flight_list_muc_prod_2.txt
