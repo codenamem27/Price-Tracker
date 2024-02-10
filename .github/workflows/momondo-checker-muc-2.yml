@@ -4,8 +4,8 @@ run-name: momondo checker - MUC - 2
 on:
   workflow_dispatch:
   schedule:
-#    - cron: '10 8 * * *'
-    - cron: '10 19 * * *'
+    - cron: '10 8 * * *'
+#    - cron: '10 19 * * *'
 
 jobs:
   check-price:

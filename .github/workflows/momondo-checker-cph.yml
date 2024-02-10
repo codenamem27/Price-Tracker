@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '30 7 * * *'
+    - cron: '20 19 * * *'
 
 jobs:
   check-price:
