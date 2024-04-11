@@ -124,16 +124,18 @@ def check_momondo(playwright: Playwright, all_flight_items: [str]) -> None:
         if not is_headless: # local debug mode
             d1 = fake.random.randint(10, 28)
             d2 = fake.random.randint(10, 28)
-            url = f"https://www.momondo.com.au/flight-search/SYD-CPH/2023-06-{d1}/2023-07-{d2}?sort=price_a"
+            url = f"https://www.momondo.com.au/flight-search/SYD-CPH/2024-06-{d1}/2024-08-{d2}?sort=price_a"
 
         print(url)
 
-        results.append(f"<p style='font-size:15px; font-weight: bold;'>{flight_item_str.replace('/2023', '').replace('/', '-')}</p>")
+        results.append(f"<p style='font-size:15px; font-weight: bold;'>{flight_item_str.replace('/2024', '').replace('/', '-')}</p>")
         try:
             page.goto(url, wait_until='domcontentloaded', timeout=3000)
             # page.wait_for_timeout(45000)
             # page.wait_for_function("document.querySelector('.skp2.skp2-inlined').getAttribute('aria-hidden')=='true'", timeout=90000)
-            page.wait_for_function("document.querySelector('.Common-Results-ProgressBar.theme-dark.Hidden')!=null", timeout=75000)
+
+            # page.wait_for_function("document.querySelector('.Common-Results-ProgressBar.theme-dark.Hidden')!=null", timeout=75000)
+            page.wait_for_function("document.querySelector('.skp2-zeroPct')!=null", timeout=75000)
 
             price_list_html = page.query_selector_all(".Ui-Flights-Results-Components-ListView-container div[data-resultid]")
             for idx, flight_itm in enumerate(price_list_html):
@@ -166,6 +168,7 @@ def check_momondo(playwright: Playwright, all_flight_items: [str]) -> None:
 
         except Exception as ex:
             results.append(f"- Failed to get data. <br>")
+            print(ex)
 
         results.append(f"{url}<br><br>")
 
@@ -183,8 +186,10 @@ def check_momondo(playwright: Playwright, all_flight_items: [str]) -> None:
         # page.pause()
 
     browser.close()
-
-    send_html_email(email_msg, "\n".join(results), f"Flight Checker: Momondo - {get_city_name(flight_city)}")
+    if is_headless:
+        send_html_email(email_msg, "\n".join(results), f"Flight Checker: Momondo - {get_city_name(flight_city)}")
+    else:
+        print("\n".join(results))
 
 
 def send_html_email(msg: MIMEMultipart, result_html: str, subject: str):
