@@ -165,7 +165,7 @@ def check_momondo(playwright: Playwright, all_flight_items: [str]) -> None:
                     results.append(f"{price_value} <br>")
 
                 print(item_price.inner_html().replace("$", "").replace(",", ""))
-                if idx == 2:
+                if idx == 3:
                     break
 
         except Exception as ex:
