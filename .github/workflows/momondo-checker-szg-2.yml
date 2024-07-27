@@ -1,5 +1,5 @@
-name: momondo - Salzburg
-run-name: momondo checker - SZG
+name: momondo - Salzburg - 2
+run-name: momondo checker - SZG - 2
 
 on:
   workflow_dispatch:
