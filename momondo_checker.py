@@ -201,7 +201,7 @@ def send_html_email(msg: MIMEMultipart, result_html: str, subject: str):
     user = "rwudev1"
     pwd = email_credential
 
-    recipient = "qh . wu!h o t m a i l.c o m"
+    recipient = "x z h e n g. q w u ! g m a i l . c o m>"
     recipient = recipient.replace(" ", "").replace("!", "@")
 
     FROM = user
