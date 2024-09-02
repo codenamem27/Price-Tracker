@@ -3,8 +3,8 @@ run-name: momondo checker - SZG - 2
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '30 8 * * *'
+#  schedule:
+#    - cron: '30 8 * * *'
 #    - cron: '10 19 * * *'
 
 jobs:
