@@ -3,8 +3,8 @@ run-name: momondo checker - TPE
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '30 8 * * *'
+#  schedule:
+#    - cron: '30 8 * * *'
 
 jobs:
   check-price:
