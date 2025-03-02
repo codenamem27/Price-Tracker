@@ -83,6 +83,8 @@ def get_city_name(airport_code: str):
         city_name = "Taipei"
     elif airport_code == "muc":
         city_name = "Munich"
+    elif airport_code == "mxp":
+        city_name = "Milan"
     else:
         city_name = airport_code
 
@@ -124,7 +126,7 @@ def check_momondo(playwright: Playwright, all_flight_items: [str]) -> None:
         if not is_headless: # local debug mode
             d1 = fake.random.randint(10, 28)
             d2 = fake.random.randint(10, 28)
-            url = f"https://www.momondo.com.au/flight-search/SYD-CPH/2024-06-{d1}/2024-08-{d2}?sort=price_a"
+            url = f"https://www.momondo.com.au/flight-search/SYD-TPE/2025-04-{d1}/2025-05-{d2}?sort=price_a"
 
         print(url)
 

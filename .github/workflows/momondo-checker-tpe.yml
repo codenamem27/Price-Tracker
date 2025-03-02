@@ -1,11 +1,11 @@
-name: momondo - Taipei
-run-name: momondo checker - TPE
+name: momondo - Generic
+run-name: momondo checker - Generic
 
 on:
   workflow_dispatch:
-#  schedule:
-#    - cron: '30 8 * * *'
-
+  schedule:
+    - cron: '30 8 * * *'
+    - cron: '20 21 * * *'
 jobs:
   check-price:
     runs-on: ubuntu-latest
