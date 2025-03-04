@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '30 8 * * *'
-    - cron: '20 21 * * *'
+#    - cron: '20 21 * * *'
 jobs:
   check-price:
     runs-on: ubuntu-latest
