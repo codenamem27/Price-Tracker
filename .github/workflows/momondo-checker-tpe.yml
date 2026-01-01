@@ -4,7 +4,7 @@ run-name: momondo checker - Generic
 on:
   workflow_dispatch:
   schedule:
-    - cron: '30 8 * * *'
+#    - cron: '30 8 * * *'
 #    - cron: '20 21 * * *'
 jobs:
   check-price:
