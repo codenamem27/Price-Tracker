@@ -3,8 +3,8 @@ run-name: momondo checker - CTS
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '45 8 * * *'
+#  schedule:
+#    - cron: '45 8 * * *'
 #    - cron: '10 19 * * *'
 
 jobs:
